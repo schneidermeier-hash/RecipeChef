@@ -36,23 +36,31 @@ export async function GET(request: NextRequest) {
 }
 
 export async function POST(request: NextRequest) {
-  const body = await request.json()
-  const { date, name, note } = body
+  try {
+    const body = await request.json()
+    const { date, name, note } = body
 
-  if (!date || !name) {
+    if (!date || !name) {
+      return NextResponse.json(
+        { error: 'Datum und Name sind erforderlich' },
+        { status: 400 }
+      )
+    }
+
+    const meal = await prisma.meal.create({
+      data: {
+        date: new Date(date),
+        name,
+        note: note || null,
+      },
+    })
+
+    return NextResponse.json(meal, { status: 201 })
+  } catch (error) {
+    console.error('POST /api/meals error:', error)
     return NextResponse.json(
-      { error: 'Datum und Name sind erforderlich' },
-      { status: 400 }
+      { error: 'Datenbankfehler' },
+      { status: 500 }
     )
   }
-
-  const meal = await prisma.meal.create({
-    data: {
-      date: new Date(date),
-      name,
-      note: note || null,
-    },
-  })
-
-  return NextResponse.json(meal, { status: 201 })
 }
