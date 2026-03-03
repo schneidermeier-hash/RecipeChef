@@ -1,7 +1,7 @@
 'use client'
 
 import { useState } from 'react'
-import MealList from '@/components/MealList'
+import Timeline from '@/components/Timeline'
 
 export default function Home() {
   const [searchQuery, setSearchQuery] = useState('')
@@ -15,7 +15,7 @@ export default function Home() {
         <div className="relative">
           <input
             type="text"
-            placeholder="Nach Gericht suchen..."
+            placeholder="Nach Gericht oder Restaurant suchen..."
             value={searchQuery}
             onChange={(e) => setSearchQuery(e.target.value)}
             className="w-full px-4 py-2 pl-10 border border-gray-300 dark:border-gray-600 rounded-md shadow-sm focus:ring-2 focus:ring-blue-500 focus:border-blue-500 dark:bg-gray-700 dark:text-white"
@@ -35,7 +35,7 @@ export default function Home() {
           </svg>
         </div>
       </div>
-      <MealList searchQuery={searchQuery} />
+      <Timeline searchQuery={searchQuery} />
     </div>
   )
 }

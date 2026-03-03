@@ -18,3 +18,25 @@ model Meal {
   createdAt DateTime @default(now())
   updatedAt DateTime @updatedAt
 }
+
+model DeliveryOrder {
+  id              Int            @id @default(autoincrement())
+  date            DateTime
+  deliveryService String
+  restaurant      String
+  price           Decimal?       @db.Decimal(8, 2)
+  note            String?
+  items           DeliveryItem[]
+  createdAt       DateTime       @default(now())
+  updatedAt       DateTime       @updatedAt
+}
+
+model DeliveryItem {
+  id        Int           @id @default(autoincrement())
+  name      String
+  note      String?
+  order     DeliveryOrder @relation(fields: [orderId], references: [id], onDelete: Cascade)
+  orderId   Int
+  createdAt DateTime      @default(now())
+  updatedAt DateTime      @updatedAt
+}

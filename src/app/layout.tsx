@@ -26,12 +26,20 @@ export default function RootLayout({
             >
               RecipeChef
             </Link>
-            <Link
-              href="/add"
-              className="bg-blue-600 hover:bg-blue-700 text-white font-medium py-2 px-4 rounded-md transition-colors"
-            >
-              + Hinzufügen
-            </Link>
+            <div className="flex gap-2">
+              <Link
+                href="/add"
+                className="bg-blue-600 hover:bg-blue-700 text-white font-medium py-2 px-3 rounded-md transition-colors text-sm"
+              >
+                + Selbst gekocht
+              </Link>
+              <Link
+                href="/add-delivery"
+                className="bg-orange-500 hover:bg-orange-600 text-white font-medium py-2 px-3 rounded-md transition-colors text-sm"
+              >
+                + Lieferung
+              </Link>
+            </div>
           </nav>
         </header>
         <main className="max-w-4xl mx-auto px-4 py-8">{children}</main>
