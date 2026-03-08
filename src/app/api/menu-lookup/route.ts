@@ -38,7 +38,7 @@ Falls kein Preis gefunden wird, lasse "price" weg. Falls das Restaurant nicht ge
   try {
     for (let attempt = 0; attempt < 3; attempt++) {
       response = await anthropic.messages.create({
-        model: 'claude-haiku-4-5',
+        model: 'claude-sonnet-4-6',
         max_tokens: 2048,
         tools: [{ type: 'web_search_20260209', name: 'web_search' }],
         messages,
