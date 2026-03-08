@@ -31,6 +31,7 @@ export default function DeliveryOrderForm({ onSuccess, onCancel, editOrder }: De
   const [menuLoading, setMenuLoading] = useState(false)
   const [menuError, setMenuError] = useState('')
   const [showMenu, setShowMenu] = useState(false)
+  const [menuSource, setMenuSource] = useState<'wolt' | 'ai' | null>(null)
 
   useEffect(() => {
     if (editOrder) {
@@ -56,6 +57,7 @@ export default function DeliveryOrderForm({ onSuccess, onCancel, editOrder }: De
     setSelectedMenuItems(new Set())
     setShowMenu(false)
     setMenuError('')
+    setMenuSource(null)
   }, [editOrder])
 
   const addItem = () => setItems((prev) => [...prev, { name: '', note: '' }])
@@ -68,7 +70,6 @@ export default function DeliveryOrderForm({ onSuccess, onCancel, editOrder }: De
       prev.map((item, i) => (i === index ? { ...item, [field]: value } : item))
     )
 
-  const isWolt = deliveryService.toLowerCase() === 'wolt'
   const canLoadMenu = restaurant.trim() !== '' && deliveryService.trim() !== ''
 
   const loadMenu = async () => {
@@ -77,6 +78,7 @@ export default function DeliveryOrderForm({ onSuccess, onCancel, editOrder }: De
     setShowMenu(false)
     setMenuItems([])
     setSelectedMenuItems(new Set())
+    setMenuSource(null)
 
     try {
       const res = await fetch(
@@ -100,6 +102,7 @@ export default function DeliveryOrderForm({ onSuccess, onCancel, editOrder }: De
       }
 
       setMenuItems(data.items)
+      setMenuSource(data.source === 'ai' ? 'ai' : 'wolt')
       setShowMenu(true)
     } catch {
       setMenuError('Verbindungsfehler beim Laden der Speisekarte')
@@ -245,31 +248,24 @@ export default function DeliveryOrderForm({ onSuccess, onCancel, editOrder }: De
             required
             className={inputClass}
           />
-          <div className="relative flex-shrink-0 group">
-            <button
-              type="button"
-              onClick={loadMenu}
-              disabled={!canLoadMenu || !isWolt || menuLoading}
-              className="h-full px-3 py-2 bg-orange-500 hover:bg-orange-600 disabled:bg-gray-300 dark:disabled:bg-gray-600 text-white disabled:text-gray-500 dark:disabled:text-gray-400 rounded-md text-sm font-medium transition-colors disabled:cursor-not-allowed whitespace-nowrap"
-            >
-              {menuLoading ? (
-                <span className="flex items-center gap-1">
-                  <svg className="animate-spin h-4 w-4" fill="none" viewBox="0 0 24 24">
-                    <circle className="opacity-25" cx="12" cy="12" r="10" stroke="currentColor" strokeWidth="4" />
-                    <path className="opacity-75" fill="currentColor" d="M4 12a8 8 0 018-8V0C5.373 0 0 5.373 0 12h4z" />
-                  </svg>
-                  Laden...
-                </span>
-              ) : (
-                'Karte laden'
-              )}
-            </button>
-            {canLoadMenu && !isWolt && (
-              <div className="absolute bottom-full mb-1 right-0 hidden group-hover:block bg-gray-800 text-white text-xs rounded px-2 py-1 whitespace-nowrap z-10">
-                Nur für Wolt verfügbar
-              </div>
+          <button
+            type="button"
+            onClick={loadMenu}
+            disabled={!canLoadMenu || menuLoading}
+            className="flex-shrink-0 h-full px-3 py-2 bg-orange-500 hover:bg-orange-600 disabled:bg-gray-300 dark:disabled:bg-gray-600 text-white disabled:text-gray-500 dark:disabled:text-gray-400 rounded-md text-sm font-medium transition-colors disabled:cursor-not-allowed whitespace-nowrap"
+          >
+            {menuLoading ? (
+              <span className="flex items-center gap-1">
+                <svg className="animate-spin h-4 w-4" fill="none" viewBox="0 0 24 24">
+                  <circle className="opacity-25" cx="12" cy="12" r="10" stroke="currentColor" strokeWidth="4" />
+                  <path className="opacity-75" fill="currentColor" d="M4 12a8 8 0 018-8V0C5.373 0 0 5.373 0 12h4z" />
+                </svg>
+                Laden...
+              </span>
+            ) : (
+              'Karte laden'
             )}
-          </div>
+          </button>
         </div>
 
         {menuError && (
@@ -281,6 +277,9 @@ export default function DeliveryOrderForm({ onSuccess, onCancel, editOrder }: De
             <div className="bg-gray-50 dark:bg-gray-800 px-3 py-2 flex items-center justify-between">
               <span className="text-sm font-medium text-gray-700 dark:text-gray-300">
                 Speisekarte ({menuItems.length} Gerichte)
+                {menuSource === 'ai' && (
+                  <span className="ml-2 text-xs text-purple-600 dark:text-purple-400 font-normal">✦ KI-Suche</span>
+                )}
               </span>
               <button
                 type="button"
